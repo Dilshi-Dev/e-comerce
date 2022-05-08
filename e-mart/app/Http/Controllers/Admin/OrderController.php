@@ -9,10 +9,17 @@ use Illuminate\Support\Facades\Session;
 
 class OrderController extends Controller
 {
-    public function orderdetails(){
-        $order=Order::get();
-        return view('admin.ordercreate',compact('order'));
+    public function orderdetails(Request $request){
+        $search = $request['search'] ?? "";
+        if ($search !=""){
+            $order=Order::where('date','LIKE',"%$search%")->orWhere('transactioncode','LIKE',"%$search%")->get();
+        }else{
+            $order=Order::get();
+        }
+        $data=compact('order','search');
+        return view('admin.ordercreate')->with($data);
     }
+
 
     public function ordersave(Request $request){
 
@@ -60,11 +67,11 @@ class OrderController extends Controller
         $order->price=$request->input('price');
 
 
-        $order->save();
-        Session::flash('message','Order Detail Created Successfully');
+        $order->update();
+        Session::flash('message','Order Detail Updated Successfully');
         Session::flash('class','success');
 
-        return back();
+        return redirect('ordermanager');
     }
 
     public function orderdelete($id){
@@ -76,5 +83,49 @@ class OrderController extends Controller
 
         return back();
     }
+
+    public function exportOrderCsv(Request $request)
+    {
+       $fileName = 'order.csv';
+       $tasks = Order::all();
+    
+            $headers = array(
+                "Content-type"        => "text/csv",
+                "Content-Disposition" => "attachment; filename=$fileName",
+                "Pragma"              => "no-cache",
+                "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+                "Expires"             => "0"
+            );
+    
+            $columns = array('Date','Order Type','Transaction Code','Price Per Kg','Quantity','Price');
+    
+            $callback = function() use($tasks, $columns) {
+                $file = fopen('php://output', 'w');
+                fputcsv($file, $columns);
+    
+                foreach ($tasks as $task) {
+                    $row['Date']  = $task->date;
+                    $row['Order Type']    = $task->ordertypr;
+                    $row['Transaction Code']    = $task->transactioncode;
+                    $row['Price Per Kg']  = $task->priceperkg;
+                    $row['Quantity']  = $task->quantity;
+                    $row['Price']  = $task->price;
+    
+                    fputcsv($file, array($row['Date'], $row['Order Type'], $row['Transaction Code'], $row['Price Per Kg'], $row['Quantity'], $row['Price']));
+                }
+    
+                fclose($file);
+            };
+           
+    
+            return response()->stream($callback, 200, $headers);
+    
+    
+    
+        
+        }
 }
 
+
+    
+   

@@ -11,12 +11,19 @@ use Illuminate\Support\Facades\Session;
 
 class DeliverydetailsController extends Controller
 {
-    public function details()
+    public function details(Request $request)
     {
-        $deliverydetails=Deliverydetail::get();
-        return view('admin.deliverydetails',compact('deliverydetails'));
+        $search = $request['search'] ?? "";
+        if ($search !=""){
+            $deliverydetails=Deliverydetail::where('trackingno','LIKE',"%$search%")->get();
+        }else{
+            $deliverydetails=Deliverydetail::get();
+        }
+        $data=compact('deliverydetails','search');
+        return view('admin.deliverydetails')->with($data);
 
     }
+
 
     public function store(Request $request)
     {
@@ -62,11 +69,13 @@ class DeliverydetailsController extends Controller
         $delivery->deliverycharge=$request->input('deliverycharge');
         $delivery->receiversnumber=$request->input('receiversnumber');
 
-        $delivery->save();
+        $delivery->update();
         Session::flash('message','Delivery Detail Updated Successfully');
         Session::flash('class','success');
 
-        return back();
+        return redirect('deliverymanager');
+
+        
 
     }
 
@@ -80,5 +89,44 @@ class DeliverydetailsController extends Controller
 
     }
 
+    public function exportCsv(Request $request)
+{
+   $fileName = 'delivery.csv';
+   $tasks = Deliverydetail::all();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('Tracking Number','Order Placement','Vehicle Number','Delivery Charge','Receiver Contact');
+
+        $callback = function() use($tasks, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($tasks as $task) {
+                $row['Tracking Number']  = $task->trackingno;
+                $row['Order Placement']    = $task->orderplacement;
+                $row['Vehicle Number']    = $task->vehicleno;
+                $row['Delivery Charge']  = $task->deliverycharge;
+                $row['Receiver Contact']  = $task->receiversnumber;
+
+                fputcsv($file, array($row['Tracking Number'], $row['Order Placement'], $row['Vehicle Number'], $row['Delivery Charge'], $row['Receiver Contact']));
+            }
+
+            fclose($file);
+        };
+       
+
+        return response()->stream($callback, 200, $headers);
+
+
+
     
+    }
+
 }

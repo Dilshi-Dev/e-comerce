@@ -40,7 +40,7 @@
             <br>
             <div class="form-grp">
                 <label>Order Type</label>
-                <input type="text" name="ordertypr" class="form-control" value="{{$order->ordertype}}">
+                <input type="text" name="ordertypr" class="form-control" value="{{$order->ordertypr}}">
             </div>
 
             <div class="form-grp">

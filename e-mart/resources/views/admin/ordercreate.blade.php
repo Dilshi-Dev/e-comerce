@@ -67,6 +67,16 @@
                 <button type="submit" class="btn btn-primary form-control">Save</button>
         </form>
 
+        <br><br><br>
+
+
+            <form action="">
+                <div class="input-group rounded">
+                    <input type="search" name="search" class="form-control" value="{{$search}}" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                </div>
+                <button class="btn btn-primary">Search</button>
+             </form>
+
 
 
               @if(Session::has('message'))
@@ -79,6 +89,7 @@
 
 
               @endif
+
 
              <table class="table table-bordered table-green">
                  <thead>
@@ -98,7 +109,7 @@
                         <tr>
                             
                             <td>{{$order->date}}</td>
-                            <td>{{$order->ordertype}}</td>
+                            <td>{{$order->ordertypr}}</td>
                             <td>{{$order->transactioncode}}</td>
                             <td>{{$order->priceperkg}}</td> 
                             <td>{{$order->quantity}}</td> 
@@ -115,6 +126,15 @@
                         
                 </tbody>
             </table>
+            <span data-href="{{url('ordertask')}}" id="export" class="btn btn-success btn-sm" onclick="exportTasks(event.target);">
+                Export
+            </span>
+            <script>
+                function exportTasks(_this) {
+                    let _url = $(_this).data('href');
+                    window.location.href = _url;
+                }
+            </script>
 
 
           </div>

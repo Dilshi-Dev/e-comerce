@@ -9,12 +9,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Employee Registration</title>
+        <title>Delivery details</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     </head>
 
     <body>
+        
 
     
     @if ($errors -> any())
@@ -67,26 +68,28 @@
 
         <br>
         <br>
+        <form action="">
+            <div class="input-group rounded">
+                <input type="search" name="search" class="form-control rounded" value="{{$search}}" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            </div>
+                <button class="btn btn-primary">Search</button>
+        </form>
 
-
-              @if(Session::has('message'))
+             @if(Session::has('message'))
               <div class="alert alert-{{Session::get('class')}} alert-dismissible fade show" role="alert">
                 <strong>{{Session::get('message')}}</strong> 
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-
-
-              @endif
-
-             <table class="table" bgcolor="green">
+            @endif
+              <table class="table">
                  <thead>
                  <tr>
                         <th>Tracking Number</th>
                         <th>Order Placement</th>
                         <th>Vehicle Number</th>
-                        <th>Delivery Number</th>
+                        <th>Delivery Charge</th>
                         <th>Receiver Contact</th>
                         <th>Action</th>
                       </tr>
@@ -100,6 +103,9 @@
                             <td>{{$deliverydetail->vehicleno}}</td>
                             <td>{{$deliverydetail->deliverycharge}}</td>
                             <td>{{$deliverydetail->receiversnumber}}</td>
+                            
+                             
+
                             <td>
                                 <a href="{{url('delivery-edit')}}/{{$deliverydetail->id}}" class="btn btn-warning">Edit</a>
                                 <a href="{{url('delivery-delete')}}/{{$deliverydetail->id}}" class="btn btn-danger">Delete</a>
@@ -113,6 +119,16 @@
                         
                 </tbody>
             </table>
+            <span data-href="{{url('tasks')}}" id="export" class="btn btn-success btn-sm" onclick="exportTasks(event.target);">
+                Export
+            </span>
+            <script>
+                function exportTasks(_this) {
+                    let _url = $(_this).data('href');
+                    window.location.href = _url;
+                }
+            </script>
+
 
 
           </div>

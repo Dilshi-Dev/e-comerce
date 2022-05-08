@@ -51,7 +51,12 @@ Route::group(['middleware'=>['auth','admin']],function(){
     Route::get('tasks',[DeliverydetailsController::class,'exportcsv']);
 
 
-
+    Route::get('ordermanager',[OrderController::class,'orderdetails']);
+    Route::post('order-save',[OrderController::class,'ordersave']);
+    Route::get('order-edit/{id}',[OrderController::class,'orderedit']);
+    Route::post('order-update',[OrderController::class,'orderupdate']);
+    Route::get('order-delete/{id}',[OrderController::class,'orderdelete']);
+    Route::get('ordertask',[OrderController::class,'exportordercsv']);
     
 
 

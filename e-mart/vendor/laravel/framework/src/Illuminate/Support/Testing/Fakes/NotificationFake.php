@@ -197,7 +197,9 @@ class NotificationFake implements NotificationDispatcher, NotificationFactory
     {
         $actualCount = collect($this->notifications)
             ->flatten(1)
-            ->reduce(fn ($count, $sent) => $count + count($sent[$notification] ?? []), 0);
+            ->reduce(function ($count, $sent) use ($notification) {
+                return $count + count($sent[$notification] ?? []);
+            }, 0);
 
         PHPUnit::assertSame(
             $expectedCount, $actualCount,
@@ -233,13 +235,15 @@ class NotificationFake implements NotificationDispatcher, NotificationFactory
             return collect();
         }
 
-        $callback = $callback ?: fn () => true;
+        $callback = $callback ?: function () {
+            return true;
+        };
 
         $notifications = collect($this->notificationsFor($notifiable, $notification));
 
-        return $notifications->filter(
-            fn ($arguments) => $callback(...array_values($arguments))
-        )->pluck('notification');
+        return $notifications->filter(function ($arguments) use ($callback) {
+            return $callback(...array_values($arguments));
+        })->pluck('notification');
     }
 
     /**
@@ -302,7 +306,9 @@ class NotificationFake implements NotificationDispatcher, NotificationFactory
             if (method_exists($notification, 'shouldSend')) {
                 $notifiableChannels = array_filter(
                     $notifiableChannels,
-                    fn ($channel) => $notification->shouldSend($notifiable, $channel) !== false
+                    function ($channel) use ($notification, $notifiable) {
+                        return $notification->shouldSend($notifiable, $channel) !== false;
+                    }
                 );
 
                 if (empty($notifiableChannels)) {

@@ -231,7 +231,6 @@ class Validator implements ValidatorContract
         'Different',
         'ExcludeIf',
         'ExcludeUnless',
-        'ExcludeWith',
         'ExcludeWithout',
         'Gt',
         'Gte',
@@ -258,7 +257,7 @@ class Validator implements ValidatorContract
      *
      * @var string[]
      */
-    protected $excludeRules = ['Exclude', 'ExcludeIf', 'ExcludeUnless', 'ExcludeWith', 'ExcludeWithout'];
+    protected $excludeRules = ['Exclude', 'ExcludeIf', 'ExcludeUnless', 'ExcludeWithout'];
 
     /**
      * The size related validation rules.
@@ -381,7 +380,9 @@ class Validator implements ValidatorContract
      */
     public function after($callback)
     {
-        $this->after[] = fn () => $callback($this);
+        $this->after[] = function () use ($callback) {
+            return $callback($this);
+        };
 
         return $this;
     }

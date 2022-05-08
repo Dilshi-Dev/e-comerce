@@ -488,11 +488,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
             }
 
             foreach ($groupKeys as $groupKey) {
-                $groupKey = match (true) {
-                    is_bool($groupKey) => (int) $groupKey,
-                    $groupKey instanceof \Stringable => (string) $groupKey,
-                    default => $groupKey,
-                };
+                $groupKey = is_bool($groupKey) ? (int) $groupKey : $groupKey;
 
                 if (! array_key_exists($groupKey, $results)) {
                     $results[$groupKey] = new static;
@@ -701,7 +697,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
     /**
      * Get the values of a given key.
      *
-     * @param  string|int|array<array-key, string>  $value
+     * @param  string|array<array-key, string>  $value
      * @param  string|null  $key
      * @return static<int, mixed>
      */
@@ -846,8 +842,8 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
 
         $position = 0;
 
-        foreach ($this->slice($offset)->items as $item) {
-            if ($position % $step === 0) {
+        foreach ($this->items as $item) {
+            if ($position % $step === $offset) {
                 $new[] = $item;
             }
 

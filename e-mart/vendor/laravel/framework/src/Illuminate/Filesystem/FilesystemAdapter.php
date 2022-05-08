@@ -318,7 +318,7 @@ class FilesystemAdapter implements CloudFilesystemContract
      * @param  string  $path
      * @param  \Psr\Http\Message\StreamInterface|\Illuminate\Http\File|\Illuminate\Http\UploadedFile|string|resource  $contents
      * @param  mixed  $options
-     * @return string|bool
+     * @return bool
      */
     public function put($path, $contents, $options = [])
     {
@@ -344,7 +344,7 @@ class FilesystemAdapter implements CloudFilesystemContract
             is_resource($contents)
                 ? $this->driver->writeStream($path, $contents, $options)
                 : $this->driver->write($path, $contents, $options);
-        } catch (UnableToWriteFile|UnableToSetVisibility $e) {
+        } catch (UnableToWriteFile $e) {
             throw_if($this->throwsExceptions(), $e);
 
             return false;
@@ -581,7 +581,7 @@ class FilesystemAdapter implements CloudFilesystemContract
     {
         try {
             $this->driver->writeStream($path, $resource, $options);
-        } catch (UnableToWriteFile|UnableToSetVisibility $e) {
+        } catch (UnableToWriteFile $e) {
             throw_if($this->throwsExceptions(), $e);
 
             return false;
@@ -722,7 +722,6 @@ class FilesystemAdapter implements CloudFilesystemContract
             ->filter(function (StorageAttributes $attributes) {
                 return $attributes->isFile();
             })
-            ->sortByPath()
             ->map(function (StorageAttributes $attributes) {
                 return $attributes->path();
             })
@@ -780,7 +779,7 @@ class FilesystemAdapter implements CloudFilesystemContract
     {
         try {
             $this->driver->createDirectory($path);
-        } catch (UnableToCreateDirectory|UnableToSetVisibility $e) {
+        } catch (UnableToCreateDirectory $e) {
             throw_if($this->throwsExceptions(), $e);
 
             return false;

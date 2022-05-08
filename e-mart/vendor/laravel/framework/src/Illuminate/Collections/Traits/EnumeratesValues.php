@@ -679,10 +679,8 @@ trait EnumeratesValues
     /**
      * Filter the items, removing any items that don't match the given type(s).
      *
-     * @template TWhereInstanceOf
-     *
-     * @param  class-string<TWhereInstanceOf>|array<array-key, class-string<TWhereInstanceOf>>  $type
-     * @return static<TKey, TWhereInstanceOf>
+     * @param  class-string|array<array-key, class-string>  $type
+     * @return static
      */
     public function whereInstanceOf($type)
     {
